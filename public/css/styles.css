@@ -25,6 +25,21 @@ body {
     margin-bottom: 10px;
 }
 
+ul {
+    list-style: none;
+}
+
+#progress {
+    width: 100%;
+    background-color: grey;
+  }
+  
+  #bar {
+    width: 1%;
+    height: 30px;
+    background-color: green;
+  }
+
 @media (max-width: 900px) {
     .frame {
         width: 100%;
