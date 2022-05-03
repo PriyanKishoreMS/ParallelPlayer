@@ -27,21 +27,36 @@ body {
 
 ul {
     list-style: none;
+    display: flex;
+    padding: 0;
+    align-items: center;
+}
+
+li {
+   margin-right: 2%;
 }
 
 #progress {
     width: 100%;
     background-color: grey;
+    border-radius: 5px;
   }
   
   #bar {
     width: 1%;
-    height: 30px;
-    background-color: green;
+    height: 0.5em;
+    margin: 1em 0 1.5em 0;
+    background-color: #c50303;
+    border-radius: 5px;
   }
 
 @media (max-width: 900px) {
     .frame {
         width: 100%;
+    }
+    
+    li {
+        margin-right: 1%;
+        margin-left: 1%;
     }
 }

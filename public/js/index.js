@@ -5,11 +5,14 @@ var firstScriptTag = document.getElementsByTagName("script")[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var player;
+var videoId = "4vQ8If7f374";
+var videotime = 0;
+var timeupdater = null;
 function onYouTubeIframeAPIReady() {
 	player = new YT.Player("player", {
 		height: "390",
 		width: "640",
-		videoId: "4vQ8If7f374",
+		videoId: videoId,
 		playerVars: {
 			playsinline: 1,
 			controls: 0,
@@ -22,8 +25,23 @@ function onYouTubeIframeAPIReady() {
 	});
 }
 
-function onPlayerReady(event) {
-	event.target.playVideo();
+// function onPlayerReady(event) {
+// 	event.target.playVideo();
+// }
+
+// when the player is ready, start checking the current time every 100 ms.
+function onPlayerReady(e) {
+	function updateTime() {
+		var oldTime = videotime;
+		if (player && player.getCurrentTime) {
+			videotime = player.getCurrentTime();
+		}
+		if (videotime !== oldTime) {
+			onProgress(videotime);
+		}
+	}
+	timeupdater = setInterval(updateTime, 100);
+	e.target.playVideo();
 }
 
 var done = false;
@@ -37,48 +55,42 @@ function stopVideo() {
 	player.stopVideo();
 }
 
-//!  End of boilerplate *******************************************
-
 var play = document.getElementById("play"),
 	pause = document.getElementById("pause"),
-	bar = document.getElementById("bar");
+	bar = document.getElementById("bar"),
+	progress = document.getElementById("progress"),
+	url = document.getElementById("url"),
+	urlbtn = document.getElementById("url-btn");
 
-var i = 0;
-function move() {
-	if (i == 0) {
-		i = 1;
-		var elem = document.getElementById("bar");
-		var width = 1;
-		var id = setInterval(frame, player.getDuration() * 10);
-		var paused = false;
-
-		function frame() {
-			if (width >= 100) {
-				clearInterval(id);
-				i = 0;
-			} else {
-				if (!paused) {
-					width++;
-					elem.style.width = width + "%";
-					// console.log(width);
-				}
-			}
-		}
-
-		play.onclick = e => {
-			e.preventDefault();
-			paused = false;
-			player.playVideo();
-			move();
-		};
-
-		pause.onclick = e => {
-			e.preventDefault();
-			paused = true;
-			player.pauseVideo();
-		};
-	}
+function onProgress(currentTime) {
+	var percent = (currentTime / player.getDuration()) * 100;
+	bar.style.width = percent + "%";
 }
+
+const playvid = vidurl => {
+	if (player) {
+		player.destroy();
+	}
+	player = new YT.Player("player", {
+		height: "390",
+		width: "640",
+		videoId: vidurl,
+		playerVars: {
+			playsinline: 1,
+			controls: 0,
+			// disablekb: 1,
+		},
+		events: {
+			onReady: onPlayerReady,
+			onStateChange: onPlayerStateChange,
+		},
+	});
+};
+
+urlbtn.onclick = () => {
+	var urlid = url.value.slice(-11);
+	playvid(urlid);
+};
 
 play.onclick = () => {
 	if (
@@ -88,13 +100,12 @@ play.onclick = () => {
 	) {
 		console.log(player.getDuration());
 		player.playVideo();
-		move();
 	}
 };
 
 pause.onclick = () => {
 	if (player.getPlayerState() == 1) {
-		move();
+		player.pauseVideo();
 	}
 };
 
@@ -107,5 +118,4 @@ $("#progress").on("click", function (e) {
 	console.log(Math.ceil(percentage * 100));
 	console.log(vidTime);
 	player.seekTo(vidTime);
-	bar.style.width = Math.ceil(percentage * 100) + "%";
 });

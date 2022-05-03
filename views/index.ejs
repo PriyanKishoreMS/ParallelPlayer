@@ -21,21 +21,25 @@
 
 <div class="frame">
 
-    <input id="url" class="form-control" type="text" placeholder="Enter youtube url">
+  <div class="input-group mb-3">
+    <input type="text" id="url" class="form-control" placeholder="Enter youtube url" aria-label="url" aria-describedby="basic-addon2">
+    <div class="input-group-append">
+      <button id="url-btn" class="btn btn-dark" type="button">Search</button>
+    </div>
+  </div>
 
-  <!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
     <div id="player"></div>
 
-<ul>
-  <li><button id="play">Play</button></li>
-  <li><button id="pause">Pause</button></li>
-</ul>
-<div id="progress">
-  <div id="bar">
-    <span></span>
-  </div>
-</div>
-
+    <div id="progress">
+      <div id="bar">
+        <span></span>
+      </div>
+    </div>
+  <ul>
+    <li><button class="btn btn-dark" id="play"><i class="fa fa-solid fa-play"></i></button></i></li>
+    <li><button class="btn btn-dark" id="pause"><i class="fa fa-solid fa-pause"></i></button></li>
+  </ul>
+  
 </div>
 
 
