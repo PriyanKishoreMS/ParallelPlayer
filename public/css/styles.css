@@ -21,25 +21,19 @@ body {
     margin-top: 50px;
 }
 
-.form-control {
+.url-bar {
     margin-bottom: 10px;
 }
 
-ul {
-    list-style: none;
-    display: flex;
-    padding: 0;
-    align-items: center;
-}
-
-li {
-   margin-right: 2%;
+.room-bar {
+    width: 25%;
 }
 
 #progress {
     width: 100%;
     background-color: grey;
     border-radius: 5px;
+    cursor: pointer;
   }
   
   #bar {
@@ -54,9 +48,23 @@ li {
     .frame {
         width: 100%;
     }
-    
-    li {
-        margin-right: 1%;
+    #progress {
+        width: 98%;
+        position: relative;
+        left: 1%;
+      }
+    #bar{
+        padding: 0 1% 0 1%;
+    }
+    .playPause {
         margin-left: 1%;
+    }
+    .url-bar{
+        padding: 0 2.2% 0 2.2%;
+    }
+
+    .room-bar {
+        margin-top: 3%;
+        width: 100%;
     }
 }

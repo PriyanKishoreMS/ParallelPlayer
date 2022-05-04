@@ -11,9 +11,12 @@
           <a class="nav-link active" aria-current="page" href="#">Home</a>
           <a class="nav-link" href="#">Features</a>
           <a class="nav-link" href="#">Pricing</a>
-          <a class="nav-link disabled">Disabled</a>
         </div>
       </div>
+      <form class="room-bar d-flex input-group">
+        <input type="search" id="room" value="" class="room-input form-control" placeholder="Enter custom room">
+      <button id="room-btn" class="btn btn-outline-success" type="button">Join</button>
+      </form>
     </div>
   </nav>
 
@@ -21,11 +24,9 @@
 
 <div class="frame">
 
-  <div class="input-group mb-3">
-    <input type="text" id="url" class="form-control" placeholder="Enter youtube url" aria-label="url" aria-describedby="basic-addon2">
-    <div class="input-group-append">
-      <button id="url-btn" class="btn btn-dark" type="button">Search</button>
-    </div>
+  <div class="url-bar input-group mb-3">
+    <input type="search" id="url" class="url-input form-control" placeholder="Enter youtube url">
+      <button id="url-btn" class="btn btn-dark" type="button">Play</button>
   </div>
 
     <div id="player"></div>
@@ -35,10 +36,11 @@
         <span></span>
       </div>
     </div>
-  <ul>
-    <li><button class="btn btn-dark" id="play"><i class="fa fa-solid fa-play"></i></button></i></li>
-    <li><button class="btn btn-dark" id="pause"><i class="fa fa-solid fa-pause"></i></button></li>
-  </ul>
+
+    <div class="playPause btn-group" role="group">
+      <button type="button" class="btn btn-dark" id="play"><i class="fa fa-solid fa-play"></i></button>
+      <button type="button" class="btn btn-dark" id="pause"><i class="fa fa-solid fa-pause"></i></button>
+    </div>
   
 </div>
 

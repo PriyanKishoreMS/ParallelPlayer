@@ -4,6 +4,8 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName("script")[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+var socket = io();
+
 var player;
 var videoId = "4vQ8If7f374";
 var videotime = 0;
@@ -60,7 +62,9 @@ var play = document.getElementById("play"),
 	bar = document.getElementById("bar"),
 	progress = document.getElementById("progress"),
 	url = document.getElementById("url"),
-	urlbtn = document.getElementById("url-btn");
+	urlbtn = document.getElementById("url-btn"),
+	roominput = document.getElementById("room"),
+	roombtn = document.getElementById("room-btn");
 
 function onProgress(currentTime) {
 	var percent = (currentTime / player.getDuration()) * 100;
@@ -87,9 +91,33 @@ const playvid = vidurl => {
 	});
 };
 
+socket.on("recv-url", id => {
+	playvid(id);
+});
+
+socket.on("recv-data", data => {
+	if (data.state == "play") {
+		if (Math.abs(data.time - player.getCurrentTime()) > 1)
+			player.seekTo(data.time);
+		player.playVideo();
+	} else if (data.state == "pause") {
+		player.pauseVideo();
+	}
+});
+
+socket.on("recv-seek", num => {
+	player.seekTo(num);
+});
+
+roombtn.onclick = () => {
+	room = roominput.value;
+	socket.emit("join-room", room);
+	alert(`You've joined the room ${room}`);
+};
+
 urlbtn.onclick = () => {
 	var urlid = url.value.slice(-11);
-	playvid(urlid);
+	socket.emit("send-url", urlid, room);
 };
 
 play.onclick = () => {
@@ -99,13 +127,27 @@ play.onclick = () => {
 		player.getPlayerState() == 2
 	) {
 		console.log(player.getDuration());
-		player.playVideo();
+		socket.emit(
+			"send-data",
+			{
+				state: "play",
+				time: player.getCurrentTime(),
+			},
+			room
+		);
 	}
 };
 
 pause.onclick = () => {
 	if (player.getPlayerState() == 1) {
-		player.pauseVideo();
+		socket.emit(
+			"send-data",
+			{
+				state: "pause",
+				time: player.getCurrentTime(),
+			},
+			room
+		);
 	}
 };
 
@@ -117,5 +159,5 @@ $("#progress").on("click", function (e) {
 	var vidTime = player.getDuration() * percentage;
 	console.log(Math.ceil(percentage * 100));
 	console.log(vidTime);
-	player.seekTo(vidTime);
+	socket.emit("send-seek", vidTime, room);
 });
