@@ -35,7 +35,7 @@ function onYouTubeIframeAPIReady() {
 function onPlayerReady(e) {
 	function updateTime() {
 		var oldTime = videotime;
-		if (player && player.getCurrentTime) {
+		if (player && player.getCurrentTime()) {
 			videotime = player.getCurrentTime();
 		}
 		if (videotime !== oldTime) {
