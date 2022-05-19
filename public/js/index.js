@@ -44,6 +44,7 @@ function onPlayerReady(e) {
 	}
 	timeupdater = setInterval(updateTime, 100);
 	e.target.playVideo();
+	ttime.innerHTML = "/" + convertHMS(player.getDuration());
 }
 
 var done = false;
@@ -64,11 +65,32 @@ var play = document.getElementById("play"),
 	url = document.getElementById("url"),
 	urlbtn = document.getElementById("url-btn"),
 	roominput = document.getElementById("room"),
-	roombtn = document.getElementById("room-btn");
+	roombtn = document.getElementById("room-btn"),
+	ctime = document.getElementById("current-time"),
+	ttime = document.getElementById("total-time");
+
+const convertHMS = value => {
+	const sec = Math.floor(value);
+	var hrs = Math.floor(sec / 3600);
+	var mins = Math.floor((sec - hrs * 3600) / 60);
+	var secs = sec - hrs * 3600 - mins * 60;
+	if (hrs < 10) {
+		hrs = "0" + hrs;
+	}
+	if (mins < 10) {
+		mins = "0" + mins;
+	}
+	if (secs < 10) {
+		secs = "0" + secs;
+	}
+	if (hrs > 0) return hrs + ":" + mins + ":" + secs;
+	else return mins + ":" + secs;
+};
 
 function onProgress(currentTime) {
 	var percent = (currentTime / player.getDuration()) * 100;
 	bar.style.width = percent + "%";
+	ctime.innerHTML = convertHMS(currentTime);
 }
 
 const playvid = vidurl => {

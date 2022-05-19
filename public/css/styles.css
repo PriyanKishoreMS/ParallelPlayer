@@ -29,6 +29,11 @@ body {
     width: 25%;
 }
 
+.time {
+    display: flex;
+    flex-direction: row;
+}
+
 #progress {
     width: 100%;
     background-color: grey;
@@ -39,7 +44,7 @@ body {
   #bar {
     width: 1%;
     height: 0.5em;
-    margin: 1em 0 1.5em 0;
+    margin: 1em 0 0.5em 0;
     background-color: #c50303;
     border-radius: 5px;
   }
