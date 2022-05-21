@@ -65,7 +65,7 @@ function stopVideo() {
 
 window.onload = () => {
 	alert(
-		"Enter any room name to play the video. Share the common room name to your friends to watch videos together!"
+		"Enter any room name and click join to play the video. Share the common room name to your friends to watch videos together!"
 	);
 };
 
