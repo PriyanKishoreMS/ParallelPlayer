@@ -7,18 +7,22 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 var socket = io();
 
 var player;
-var videoId = "4vQ8If7f374";
+var videoId = "-TIflZTv4mo";
 var videotime = 0;
+var height = "540";
+var width = "1280";
 var timeupdater = null;
 function onYouTubeIframeAPIReady() {
 	player = new YT.Player("player", {
-		height: "390",
-		width: "640",
+		height: height,
+		width: width,
 		videoId: videoId,
 		playerVars: {
 			playsinline: 1,
+			rel: 0,
 			controls: 0,
-			// disablekb: 1,
+			modestbranding: 0,
+			disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
@@ -54,9 +58,16 @@ function onPlayerStateChange(event) {
 		done = true;
 	}
 }
+
 function stopVideo() {
 	player.stopVideo();
 }
+
+window.onload = () => {
+	alert(
+		"Enter any room name to play the video. Share the common room name to your friends to watch videos together!"
+	);
+};
 
 var play = document.getElementById("play"),
 	pause = document.getElementById("pause"),
@@ -67,7 +78,8 @@ var play = document.getElementById("play"),
 	roominput = document.getElementById("room"),
 	roombtn = document.getElementById("room-btn"),
 	ctime = document.getElementById("current-time"),
-	ttime = document.getElementById("total-time");
+	ttime = document.getElementById("total-time"),
+	rate = document.getElementById("rate");
 
 const convertHMS = value => {
 	const sec = Math.floor(value);
@@ -98,13 +110,14 @@ const playvid = vidurl => {
 		player.destroy();
 	}
 	player = new YT.Player("player", {
-		height: "390",
-		width: "640",
+		height: height,
+		width: width,
 		videoId: vidurl,
 		playerVars: {
 			playsinline: 1,
+			rel: 0,
 			controls: 0,
-			// disablekb: 1,
+			disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
@@ -129,6 +142,20 @@ socket.on("recv-data", data => {
 
 socket.on("recv-seek", num => {
 	player.seekTo(num);
+});
+
+socket.on("recv-rate", rate => {
+	if (rate == 1) {
+		player.setPlaybackRate(0.25);
+	} else if (rate == 2) {
+		player.setPlaybackRate(0.5);
+	} else if (rate == 3) {
+		player.setPlaybackRate(1);
+	} else if (rate == 4) {
+		player.setPlaybackRate(1.5);
+	} else if (rate == 5) {
+		player.setPlaybackRate(2);
+	}
 });
 
 roombtn.onclick = () => {
@@ -170,6 +197,20 @@ pause.onclick = () => {
 			},
 			room
 		);
+	}
+};
+
+rate.onclick = () => {
+	if (rate.value == 1) {
+		socket.emit("send-rate", 1, room);
+	} else if (rate.value == 2) {
+		socket.emit("send-rate", 2, room);
+	} else if (rate.value == 3) {
+		socket.emit("send-rate", 3, room);
+	} else if (rate.value == 4) {
+		socket.emit("send-rate", 4, room);
+	} else if (rate.value == 5) {
+		socket.emit("send-rate", 5, room);
 	}
 };
 

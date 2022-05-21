@@ -45,6 +45,13 @@ io.on("connection", socket => {
 			io.to(room).emit("recv-seek", num);
 		}
 	});
+	socket.on("send-rate", (rate, room) => {
+		if (room == "") {
+			io.emit("recv-rate", rate);
+		} else {
+			io.to(room).emit("recv-rate", rate);
+		}
+	});
 
 	socket.on("join-room", room => {
 		socket.join(room);

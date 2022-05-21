@@ -13,12 +13,17 @@ body {
 #player {
     margin: auto;
     width: 100%;
+    pointer-events: none;
+}
+
+.playPause {
+    width: 7rem;
 }
 
 .frame {
     margin: auto;
-    width: 50%;
-    margin-top: 50px;
+    width: 75%;
+    margin-top: 15px;
 }
 
 .url-bar {
@@ -32,6 +37,11 @@ body {
 .time {
     display: flex;
     flex-direction: row;
+    height: 30px;
+}
+
+.playback-rate {
+    float: right;
 }
 
 #progress {
@@ -50,8 +60,17 @@ body {
   }
 
 @media (max-width: 900px) {
+    body {
+        height: 100%;
+    }
     .frame {
         width: 100%;
+        margin-top: 50px;
+    }
+    #player {
+        margin: auto;
+        width: 100%;
+        height: 390px;
     }
     #progress {
         width: 98%;
@@ -71,5 +90,15 @@ body {
     .room-bar {
         margin-top: 3%;
         width: 100%;
+    }
+    .time {
+        padding: 0 1% 0 1%;
+        height: auto;
+    }
+    .playback-rate {
+        margin-right: 1%;
+    }
+    .playPause {
+        width: auto;
     }
 }

@@ -8,9 +8,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
+          <!-- <a class="nav-link active" aria-current="page" href="#">Home</a>
           <a class="nav-link" href="#">Features</a>
-          <a class="nav-link" href="#">Pricing</a>
+          <a class="nav-link" href="#">Pricing</a> -->
         </div>
       </div>
       <form class="room-bar d-flex input-group">
@@ -23,7 +23,7 @@
 <!-- ---------------end of navbar--------------------- -->
 
 
-<div class="frame">
+<div class="ytplayer frame">
   <div class="url-bar input-group mb-3">
     <input type="search" id="url" class="url-input form-control" placeholder="Enter youtube url">
       <button id="url-btn" class="btn btn-dark" type="button">Play</button>
@@ -45,7 +45,15 @@
       <button type="button" class="btn btn-dark" id="play"><i class="fa fa-solid fa-play"></i></button>
       <button type="button" class="btn btn-dark" id="pause"><i class="fa fa-solid fa-pause"></i></button>
     </div>
-  
+    <div class="playback-rate ">
+      <select id="rate" class="btn-dark form-select" aria-label="Default select example">
+        <option value="1">0.25</option>
+        <option value="2">0.5</option>
+        <option value="3" selected>1</option>
+        <option value="4">1.5</option>
+        <option value="5">2</option>
+      </select>
+    </div>    
 </div>
 
 
