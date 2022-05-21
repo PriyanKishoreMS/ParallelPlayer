@@ -7,7 +7,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 var socket = io();
 
 var player;
-var videoId = "-TIflZTv4mo";
+var videoId = "LrCEiNMNIKQ";
 var videotime = 0;
 var height = "540";
 var width = "1280";
