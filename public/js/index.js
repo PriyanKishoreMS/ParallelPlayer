@@ -50,9 +50,6 @@ function onPlayerReady(e) {
 	timeupdater = setInterval(updateTime, 100);
 	e.target.playVideo();
 	ttime.innerHTML = "/" + convertHMS(player.getDuration());
-	if (videoId) {
-		url.value = videoId;
-	}
 }
 
 var done = false;
@@ -72,6 +69,9 @@ window.onload = () => {
 		"Enter any room name and share the room name with your friends to start watching together!"
 	);
 	if (lastroom) alert(`You're now continuing in your previous room: ${room}`);
+	if (videoId) {
+		url.value = videoId;
+	}
 };
 
 var play = document.getElementById("play"),
