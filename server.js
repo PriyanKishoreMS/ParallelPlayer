@@ -24,33 +24,16 @@ io.on("connection", socket => {
 		console.log(`User ${socket.id} disconnected`);
 	});
 	socket.on("send-url", (id, room) => {
-		if (room == "") {
-			console.log(id);
-			io.emit("recv-url", id);
-		} else {
-			io.to(room).emit("recv-url", id);
-		}
+		io.to(room).emit("recv-url", id);
 	});
 	socket.on("send-data", (data, room) => {
-		if (room == "") {
-			io.emit("recv-data", data);
-		} else {
-			io.to(room).emit("recv-data", data);
-		}
+		io.to(room).emit("recv-data", data);
 	});
 	socket.on("send-seek", (num, room) => {
-		if (room == "") {
-			io.emit("recv-seek", num);
-		} else {
-			io.to(room).emit("recv-seek", num);
-		}
+		io.to(room).emit("recv-seek", num);
 	});
 	socket.on("send-rate", (rate, room) => {
-		if (room == "") {
-			io.emit("recv-rate", rate);
-		} else {
-			io.to(room).emit("recv-rate", rate);
-		}
+		io.to(room).emit("recv-rate", rate);
 	});
 
 	socket.on("join-room", room => {

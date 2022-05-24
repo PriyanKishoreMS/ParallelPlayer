@@ -59,6 +59,26 @@ body {
     border-radius: 5px;
   }
 
+  .form-range {
+      width: 150px;
+      margin: 10px;
+      margin-top: 0;
+  }
+
+  .vol-rate {
+      display: flex;
+      flex-direction: row;
+      float: right;
+      align-items:center;
+      position: relative;
+      bottom: 10px;
+  }
+
+  .vol {
+      display:flex;
+      flex-direction: column;
+  }
+
 @media (max-width: 900px) {
     body {
         height: 100%;
@@ -99,5 +119,14 @@ body {
     }
     .playPause {
         width: auto;
+    }
+    .vol-rate {
+        flex-direction: column;
+        bottom: 31.1px;
+        align-items:flex-end;
+    }
+    .vol {
+        display:flex;
+        flex-direction: row;
     }
 }

@@ -5,9 +5,10 @@ var firstScriptTag = document.getElementsByTagName("script")[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 var socket = io();
+var videoId = localStorage.getItem("local-url");
+if (!videoId) videoId = "gDjMZvYWUdo";
 
 var player;
-var videoId = "gDjMZvYWUdo";
 var videotime = 0;
 var height = "540";
 var width = "1280";
@@ -49,6 +50,9 @@ function onPlayerReady(e) {
 	timeupdater = setInterval(updateTime, 100);
 	e.target.playVideo();
 	ttime.innerHTML = "/" + convertHMS(player.getDuration());
+	if (videoId) {
+		url.value = videoId;
+	}
 }
 
 var done = false;
@@ -65,8 +69,9 @@ function stopVideo() {
 
 window.onload = () => {
 	alert(
-		"Enter any room name and click join to play the video. Share the common room name to your friends to watch videos together!"
+		"Enter any room name and share the room name with your friends to start watching together!"
 	);
+	if (lastroom) alert(`You're now continuing in your previous room: ${room}`);
 };
 
 var play = document.getElementById("play"),
@@ -79,7 +84,8 @@ var play = document.getElementById("play"),
 	roombtn = document.getElementById("room-btn"),
 	ctime = document.getElementById("current-time"),
 	ttime = document.getElementById("total-time"),
-	rate = document.getElementById("rate");
+	rate = document.getElementById("rate"),
+	volume = document.getElementById("volume");
 
 const convertHMS = value => {
 	const sec = Math.floor(value);
@@ -101,8 +107,9 @@ const convertHMS = value => {
 
 function onProgress(currentTime) {
 	var percent = (currentTime / player.getDuration()) * 100;
-	bar.style.width = percent + "%";
+	progress.value = percent;
 	ctime.innerHTML = convertHMS(currentTime);
+	player.setVolume(volume.value);
 }
 
 const playvid = vidurl => {
@@ -128,6 +135,7 @@ const playvid = vidurl => {
 
 socket.on("recv-url", id => {
 	playvid(id);
+	localStorage.setItem("local-url", id);
 });
 
 socket.on("recv-data", data => {
@@ -161,11 +169,36 @@ socket.on("recv-rate", rate => {
 roombtn.onclick = () => {
 	room = roominput.value;
 	socket.emit("join-room", room);
+	localStorage.setItem("last-room", room);
 	alert(`You've joined the room ${room}`);
 };
 
+var lastroom = localStorage.getItem("last-room");
+if (lastroom) {
+	room = lastroom;
+	socket.emit("join-room", room);
+	roominput.value = room;
+}
+
+function makeroom(length) {
+	var result = "";
+	var characters =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+}
+
+if (roominput.value == "" && !lastroom) {
+	room = makeroom(5);
+	socket.emit("join-room", room);
+}
+
 urlbtn.onclick = () => {
 	var urlid = url.value.slice(-11);
+	localStorage.setItem("local-url", urlid);
 	socket.emit("send-url", urlid, room);
 };
 
@@ -220,7 +253,5 @@ $("#progress").on("click", function (e) {
 	var totalWidth = $("#progress").width();
 	var percentage = left / totalWidth;
 	var vidTime = player.getDuration() * percentage;
-	console.log(Math.ceil(percentage * 100));
-	console.log(vidTime);
 	socket.emit("send-seek", vidTime, room);
 });
