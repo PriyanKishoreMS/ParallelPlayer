@@ -107,7 +107,7 @@ const convertHMS = value => {
 
 function onProgress(currentTime) {
 	var percent = (currentTime / player.getDuration()) * 100;
-	progress.value = percent;
+	bar.style.width = percent + "%";
 	ctime.innerHTML = convertHMS(currentTime);
 	player.setVolume(volume.value);
 }
