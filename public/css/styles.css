@@ -13,7 +13,7 @@ body {
 #player {
     margin: auto;
     width: 100%;
-    pointer-events: none;
+    /* pointer-events: none; */
 }
 
 .playPause {

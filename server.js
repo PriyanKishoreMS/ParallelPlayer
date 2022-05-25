@@ -29,9 +29,9 @@ io.on("connection", socket => {
 	socket.on("send-data", (data, room) => {
 		io.to(room).emit("recv-data", data);
 	});
-	socket.on("send-seek", (num, room) => {
-		io.to(room).emit("recv-seek", num);
-	});
+	// socket.on("send-seek", (num, room) => {
+	// 	io.to(room).emit("recv-seek", num);
+	// });
 	socket.on("send-rate", (rate, room) => {
 		io.to(room).emit("recv-rate", rate);
 	});

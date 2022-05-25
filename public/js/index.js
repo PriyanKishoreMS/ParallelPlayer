@@ -21,13 +21,14 @@ function onYouTubeIframeAPIReady() {
 		playerVars: {
 			playsinline: 1,
 			rel: 0,
-			controls: 0,
+			controls: 1,
 			modestbranding: 0,
-			disablekb: 1,
+			// disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
 			onStateChange: onPlayerStateChange,
+			onRateChange: onPlaybackRateChange,
 		},
 	});
 }
@@ -36,7 +37,6 @@ function onYouTubeIframeAPIReady() {
 // 	event.target.playVideo();
 // }
 
-// when the player is ready, start checking the current time every 100 ms.
 function onPlayerReady(e) {
 	function updateTime() {
 		var oldTime = videotime;
@@ -49,20 +49,58 @@ function onPlayerReady(e) {
 	}
 	timeupdater = setInterval(updateTime, 100);
 	e.target.playVideo();
-	ttime.innerHTML = "/" + convertHMS(player.getDuration());
+}
+
+function onProgress(currentTime) {
+	// console.log(currentTime);
 }
 
 var done = false;
-function onPlayerStateChange(event) {
-	if (event.data == YT.PlayerState.PLAYING && !done) {
-		// setTimeout(stopVideo, 6000);
-		done = true;
-	}
-}
+const onPlayerStateChange = event => {
+	// if (event.data == YT.PlayerState.PLAYING && !done) {
+	// 	done = true;
+	// }
 
-function stopVideo() {
-	player.stopVideo();
-}
+	if (event.data == YT.PlayerState.PLAYING) {
+		playVid();
+	}
+	if (event.data == YT.PlayerState.PAUSED) {
+		pauseVid();
+	}
+};
+
+const onPlaybackRateChange = e => {
+	changeRate();
+};
+
+const changeRate = () => {
+	alert(player.getPlaybackRate());
+	socket.emit("send-rate", player.getPlaybackRate(), room);
+};
+
+const pauseVid = () => {
+	console.log("pause");
+	socket.emit(
+		"send-data",
+		{
+			state: "pause",
+			time: player.getCurrentTime(),
+		},
+		room
+	);
+};
+
+const playVid = () => {
+	console.log("play");
+	socket.emit(
+		"send-data",
+		{
+			state: "play",
+			time: player.getCurrentTime(),
+		},
+		room
+	);
+};
 
 window.onload = () => {
 	alert(
@@ -74,43 +112,10 @@ window.onload = () => {
 	}
 };
 
-var play = document.getElementById("play"),
-	pause = document.getElementById("pause"),
-	bar = document.getElementById("bar"),
-	progress = document.getElementById("progress"),
-	url = document.getElementById("url"),
+var url = document.getElementById("url"),
 	urlbtn = document.getElementById("url-btn"),
 	roominput = document.getElementById("room"),
-	roombtn = document.getElementById("room-btn"),
-	ctime = document.getElementById("current-time"),
-	ttime = document.getElementById("total-time"),
-	rate = document.getElementById("rate"),
-	volume = document.getElementById("volume");
-
-const convertHMS = value => {
-	const sec = Math.floor(value);
-	var hrs = Math.floor(sec / 3600);
-	var mins = Math.floor((sec - hrs * 3600) / 60);
-	var secs = sec - hrs * 3600 - mins * 60;
-	if (hrs < 10) {
-		hrs = "0" + hrs;
-	}
-	if (mins < 10) {
-		mins = "0" + mins;
-	}
-	if (secs < 10) {
-		secs = "0" + secs;
-	}
-	if (hrs > 0) return hrs + ":" + mins + ":" + secs;
-	else return mins + ":" + secs;
-};
-
-function onProgress(currentTime) {
-	var percent = (currentTime / player.getDuration()) * 100;
-	bar.style.width = percent + "%";
-	ctime.innerHTML = convertHMS(currentTime);
-	player.setVolume(volume.value);
-}
+	roombtn = document.getElementById("room-btn");
 
 const playvid = vidurl => {
 	if (player) {
@@ -123,8 +128,8 @@ const playvid = vidurl => {
 		playerVars: {
 			playsinline: 1,
 			rel: 0,
-			controls: 0,
-			disablekb: 1,
+			controls: 1,
+			// disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
@@ -148,22 +153,8 @@ socket.on("recv-data", data => {
 	}
 });
 
-socket.on("recv-seek", num => {
-	player.seekTo(num);
-});
-
 socket.on("recv-rate", rate => {
-	if (rate == 1) {
-		player.setPlaybackRate(0.25);
-	} else if (rate == 2) {
-		player.setPlaybackRate(0.5);
-	} else if (rate == 3) {
-		player.setPlaybackRate(1);
-	} else if (rate == 4) {
-		player.setPlaybackRate(1.5);
-	} else if (rate == 5) {
-		player.setPlaybackRate(2);
-	}
+	player.setPlaybackRate(parseInt(rate));
 });
 
 roombtn.onclick = () => {
@@ -201,57 +192,3 @@ urlbtn.onclick = () => {
 	localStorage.setItem("local-url", urlid);
 	socket.emit("send-url", urlid, room);
 };
-
-play.onclick = () => {
-	if (
-		player.getPlayerState() == -1 ||
-		player.getPlayerState() == 0 ||
-		player.getPlayerState() == 2
-	) {
-		console.log(player.getDuration());
-		socket.emit(
-			"send-data",
-			{
-				state: "play",
-				time: player.getCurrentTime(),
-			},
-			room
-		);
-	}
-};
-
-pause.onclick = () => {
-	if (player.getPlayerState() == 1) {
-		socket.emit(
-			"send-data",
-			{
-				state: "pause",
-				time: player.getCurrentTime(),
-			},
-			room
-		);
-	}
-};
-
-rate.onclick = () => {
-	if (rate.value == 1) {
-		socket.emit("send-rate", 1, room);
-	} else if (rate.value == 2) {
-		socket.emit("send-rate", 2, room);
-	} else if (rate.value == 3) {
-		socket.emit("send-rate", 3, room);
-	} else if (rate.value == 4) {
-		socket.emit("send-rate", 4, room);
-	} else if (rate.value == 5) {
-		socket.emit("send-rate", 5, room);
-	}
-};
-
-$("#progress").on("click", function (e) {
-	var offset = $(this).offset();
-	var left = e.pageX - offset.left;
-	var totalWidth = $("#progress").width();
-	var percentage = left / totalWidth;
-	var vidTime = player.getDuration() * percentage;
-	socket.emit("send-seek", vidTime, room);
-});
