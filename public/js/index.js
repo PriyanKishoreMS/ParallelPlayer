@@ -21,14 +21,13 @@ function onYouTubeIframeAPIReady() {
 		playerVars: {
 			playsinline: 1,
 			rel: 0,
-			controls: 1,
+			controls: 0,
 			modestbranding: 0,
-			// disablekb: 1,
+			disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
 			onStateChange: onPlayerStateChange,
-			onRateChange: onPlaybackRateChange,
 		},
 	});
 }
@@ -37,6 +36,7 @@ function onYouTubeIframeAPIReady() {
 // 	event.target.playVideo();
 // }
 
+// when the player is ready, start checking the current time every 100 ms.
 function onPlayerReady(e) {
 	function updateTime() {
 		var oldTime = videotime;
@@ -49,58 +49,83 @@ function onPlayerReady(e) {
 	}
 	timeupdater = setInterval(updateTime, 100);
 	e.target.playVideo();
-}
+	ttime.innerHTML = "/" + convertHMS(player.getDuration());
 
-function onProgress(currentTime) {
-	// console.log(currentTime);
+	/// Time tracking starting here********************************************
+
+	// var lastTime = -1;
+	// var interval = 600;
+
+	// var checkPlayerTime = () => {
+	// 	if (lastTime != -1) {
+	// 		if (player.getPlayerState() == YT.PlayerState.PLAYING) {
+	// 			var t = player.getCurrentTime();
+
+	// 			//console.log(Math.abs(t - lastTime -1));
+
+	// 			///expecting 1 second interval , with 500 ms margin
+	// 			if (Math.abs(t - lastTime - 1) > 0.5) {
+	// 				// there was a seek occuring
+	// 				// console.log("seek"); /// fire your event here !
+	// 			}
+	// 		}
+	// 	}
+	// 	lastTime = player.getCurrentTime();
+	// 	setTimeout(checkPlayerTime, interval); /// repeat function call in 1 second
+	// };
+	// setTimeout(checkPlayerTime, interval); /// initial call delayed
 }
 
 var done = false;
-const onPlayerStateChange = event => {
-	// if (event.data == YT.PlayerState.PLAYING && !done) {
-	// 	done = true;
-	// }
-
-	if (event.data == YT.PlayerState.PLAYING) {
-		playVid();
+function onPlayerStateChange(event) {
+	if (event.data == YT.PlayerState.PLAYING && !done) {
+		// setTimeout(stopVideo, 6000);
+		done = true;
 	}
-	if (event.data == YT.PlayerState.PAUSED) {
-		pauseVid();
-	}
-};
+}
 
-const onPlaybackRateChange = e => {
-	changeRate();
-};
+// const onPlayerStateChange = event => {
+// var playing = false;
+// if (event.data == YT.PlayerState.PLAYING) {
+// 	playing = true;
+// 	playVid();
+// } else if (event.data == YT.PlayerState.PAUSED && !playing) {
+// 	pauseVid();
+// }
+// };
 
-const changeRate = () => {
-	alert(player.getPlaybackRate());
-	socket.emit("send-rate", player.getPlaybackRate(), room);
-};
+// const playVid = () => {
+// 	console.log("play");
+// 	socket.emit(
+// 		"send-data",
+// 		{
+// 			state: "play",
+// 			time: player.getCurrentTime(),
+// 		},
+// 		room
+// 	);
+// };
 
-const pauseVid = () => {
-	console.log("pause");
-	socket.emit(
-		"send-data",
-		{
-			state: "pause",
-			time: player.getCurrentTime(),
-		},
-		room
-	);
-};
+// const pauseVid = () => {
+// 	console.log("pause");
+// 	socket.emit(
+// 		"send-data",
+// 		{
+// 			state: "pause",
+// 			time: player.getCurrentTime(),
+// 		},
+// 		room
+// 	);
+// };
 
-const playVid = () => {
-	console.log("play");
-	socket.emit(
-		"send-data",
-		{
-			state: "play",
-			time: player.getCurrentTime(),
-		},
-		room
-	);
-};
+// const onPlaybackRateChange = e => {
+// 	changeRate();
+// };
+
+// const changeRate = () => {
+// 	alert(player.getPlaybackRate());
+// 	socket.emit("send-rate", player.getPlaybackRate(), room);
+// };
 
 window.onload = () => {
 	alert(
@@ -112,10 +137,44 @@ window.onload = () => {
 	}
 };
 
-var url = document.getElementById("url"),
+var play = document.getElementById("play"),
+	pause = document.getElementById("pause"),
+	bar = document.getElementById("bar"),
+	progress = document.getElementById("progress"),
+	url = document.getElementById("url"),
 	urlbtn = document.getElementById("url-btn"),
 	roominput = document.getElementById("room"),
-	roombtn = document.getElementById("room-btn");
+	roombtn = document.getElementById("room-btn"),
+	ctime = document.getElementById("current-time"),
+	ttime = document.getElementById("total-time"),
+	rate = document.getElementById("rate"),
+	volume = document.getElementById("volume");
+
+const convertHMS = value => {
+	const sec = Math.floor(value);
+	var hrs = Math.floor(sec / 3600);
+	var mins = Math.floor((sec - hrs * 3600) / 60);
+	var secs = sec - hrs * 3600 - mins * 60;
+	if (hrs < 10) {
+		hrs = "0" + hrs;
+	}
+	if (mins < 10) {
+		mins = "0" + mins;
+	}
+	if (secs < 10) {
+		secs = "0" + secs;
+	}
+	if (hrs > 0) return hrs + ":" + mins + ":" + secs;
+	else return mins + ":" + secs;
+};
+
+function onProgress(currentTime) {
+	// console.log(currentTime);
+	var percent = (currentTime / player.getDuration()) * 100;
+	bar.style.width = percent + "%";
+	ctime.innerHTML = convertHMS(currentTime);
+	player.setVolume(volume.value);
+}
 
 const playvid = vidurl => {
 	if (player) {
@@ -128,8 +187,8 @@ const playvid = vidurl => {
 		playerVars: {
 			playsinline: 1,
 			rel: 0,
-			controls: 1,
-			// disablekb: 1,
+			controls: 0,
+			disablekb: 1,
 		},
 		events: {
 			onReady: onPlayerReady,
@@ -151,6 +210,10 @@ socket.on("recv-data", data => {
 	} else if (data.state == "pause") {
 		player.pauseVideo();
 	}
+});
+
+socket.on("recv-seek", num => {
+	player.seekTo(num);
 });
 
 socket.on("recv-rate", rate => {
@@ -192,3 +255,49 @@ urlbtn.onclick = () => {
 	localStorage.setItem("local-url", urlid);
 	socket.emit("send-url", urlid, room);
 };
+
+play.onclick = () => {
+	console.log("play");
+	if (
+		player.getPlayerState() == -1 ||
+		player.getPlayerState() == 0 ||
+		player.getPlayerState() == 2
+	) {
+		console.log(player.getDuration());
+		socket.emit(
+			"send-data",
+			{
+				state: "play",
+				time: player.getCurrentTime(),
+			},
+			room
+		);
+	}
+};
+
+pause.onclick = () => {
+	console.log("pause");
+	if (player.getPlayerState() == 1) {
+		socket.emit(
+			"send-data",
+			{
+				state: "pause",
+				time: player.getCurrentTime(),
+			},
+			room
+		);
+	}
+};
+
+rate.onclick = () => {
+	socket.emit("send-rate", rate.value, room);
+};
+
+$("#progress").on("click", function (e) {
+	var offset = $(this).offset();
+	var left = e.pageX - offset.left;
+	var totalWidth = $("#progress").width();
+	var percentage = left / totalWidth;
+	var vidTime = player.getDuration() * percentage;
+	socket.emit("send-seek", vidTime, room);
+});
