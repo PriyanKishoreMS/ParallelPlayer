@@ -4,6 +4,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const { default: swal } = require("sweetalert");
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -34,6 +35,9 @@ io.on("connection", socket => {
 	});
 	socket.on("send-rate", (rate, room) => {
 		io.to(room).emit("recv-rate", rate);
+	});
+	socket.on("buffer-send", (play, room) => {
+		io.to(room).emit("buffer-recv", play);
 	});
 
 	socket.on("join-room", room => {

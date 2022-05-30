@@ -51,7 +51,7 @@ function onPlayerReady(e) {
 	e.target.playVideo();
 	ttime.innerHTML = "/" + convertHMS(player.getDuration());
 
-	/// Time tracking starting here********************************************
+	// Time tracking starting here********************************************
 
 	// var lastTime = -1;
 	// var interval = 600;
@@ -84,14 +84,23 @@ function onPlayerStateChange(event) {
 	}
 }
 
+//! *********************************************************************************************
+
 // const onPlayerStateChange = event => {
-// var playing = false;
-// if (event.data == YT.PlayerState.PLAYING) {
-// 	playing = true;
-// 	playVid();
-// } else if (event.data == YT.PlayerState.PAUSED && !playing) {
-// 	pauseVid();
-// }
+// 	console.log(event.data);
+// 	switch (event.data) {
+// 		case 0:
+// 			console.log("video ended");
+// 			break;
+// 		case 1:
+// 			playVid();
+// 			break;
+// 		case 2:
+// 			pauseVid();
+// 			break;
+// 		case 3:
+// 			bufferVid();
+// 	}
 // };
 
 // const playVid = () => {
@@ -118,20 +127,42 @@ function onPlayerStateChange(event) {
 // 	);
 // };
 
+socket.on("recv-data", data => {
+	if (data.state == "play") {
+		if (Math.abs(data.time - player.getCurrentTime()) > 1)
+			player.seekTo(data.time);
+		player.playVideo();
+	} else if (data.state == "pause") {
+		player.pauseVideo();
+	}
+});
+
+// const bufferVid = () => {
+// 	play = "play";
+// 	socket.emit("buffer-send", play, room);
+// };
+
+// socket.on("buffer-recv", play => {
+// 	if (play == "play") {
+// 		player.playVideo();
+// 	}
+// });
+
+//! *****************************************************************************************
 // const onPlaybackRateChange = e => {
 // 	changeRate();
 // };
 
 // const changeRate = () => {
-// 	alert(player.getPlaybackRate());
+// 	swal(player.getPlaybackRate());
 // 	socket.emit("send-rate", player.getPlaybackRate(), room);
 // };
 
 window.onload = () => {
-	alert(
+	swal(
 		"Enter any room name and share the room name with your friends to start watching together!"
 	);
-	if (lastroom) alert(`You're now continuing in your previous room: ${room}`);
+	if (lastroom) swal(`You're now continuing in your previous room: ${room}`);
 	if (videoId) {
 		url.value = videoId;
 	}
@@ -202,29 +233,20 @@ socket.on("recv-url", id => {
 	localStorage.setItem("local-url", id);
 });
 
-socket.on("recv-data", data => {
-	if (data.state == "play") {
-		if (Math.abs(data.time - player.getCurrentTime()) > 1)
-			player.seekTo(data.time);
-		player.playVideo();
-	} else if (data.state == "pause") {
-		player.pauseVideo();
-	}
-});
-
 socket.on("recv-seek", num => {
 	player.seekTo(num);
 });
 
-socket.on("recv-rate", rate => {
-	player.setPlaybackRate(parseInt(rate));
+socket.on("recv-rate", playrate => {
+	player.setPlaybackRate(parseInt(playrate));
+	rate.value = playrate;
 });
 
 roombtn.onclick = () => {
 	room = roominput.value;
 	socket.emit("join-room", room);
 	localStorage.setItem("last-room", room);
-	alert(`You've joined the room ${room}`);
+	swal(`You've joined the room ${room}`);
 };
 
 var lastroom = localStorage.getItem("last-room");
